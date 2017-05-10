@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="SilviaCore.Controls.FadeHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SilviaCore.Controls"
+             mc:Ignorable="d">
+    <StackPanel Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Background="Green" Opacity="0">
+        <StackPanel.Style>
+            <Style TargetType="StackPanel">
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="true">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                            Storyboard.TargetProperty="Opacity"
+                                            From="0.0" To="1.0" Duration="0:0:0.25"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.EnterActions>
+                        <Trigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                            Storyboard.TargetProperty="Opacity"
+                                            From="1.0" To="0.0" Duration="0:0:0.25"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.ExitActions>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </StackPanel.Style>
+    </StackPanel>
+</UserControl>
