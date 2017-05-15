@@ -5,26 +5,31 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SilviaGUI"
-        xmlns:SilviaCore="clr-namespace:SilviaCore.Controls;assembly=SilviaCore"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="400"
         WindowStyle="None"
         AllowsTransparency="True">
-    <Window.Background>
+    <!--<Window.Background>
         <SolidColorBrush Opacity="0.5" Color="#000000"/>
-    </Window.Background>
+    </Window.Background>-->
     <Window.Resources>
-        <Storyboard x:Key="sb">
-            <DoubleAnimation
-                Storyboard.TargetName="avatarImg"
-                Storyboard.TargetProperty="Opacity"
-                From="0.0" To="1.0" Duration="0:0:2"/>
-        </Storyboard>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/SilviaCore;component/Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Storyboard x:Key="sb">
+                <DoubleAnimation
+                    Storyboard.TargetName="avatarImg"
+                    Storyboard.TargetProperty="Opacity"
+                    From="0.0" To="1.0" Duration="0:0:1.5"/>
+            </Storyboard>
+        </ResourceDictionary>
     </Window.Resources>
+    <Window.Style>
+        <StaticResource ResourceKey="SilviaGUIWindow"/>
+    </Window.Style>
     <Grid>
-        <SilviaCore:FadeHeader x:Name="header">
-            
-        </SilviaCore:FadeHeader>
-        <Image x:Name="avatarImg" Source="avatar.png" HorizontalAlignment="center" Height="200" Margin="0,25,0,0" VerticalAlignment="Top"/>
+        <Image x:Name="avatarImg" Source="avatar.png" HorizontalAlignment="center" Height="200" Margin="0,10,0,0" VerticalAlignment="Top"/>
+        <StackPanel x:Name="header" Style="{StaticResource ResourceKey=SilviaGUIWindowHeader}" />
     </Grid>
 </Window>

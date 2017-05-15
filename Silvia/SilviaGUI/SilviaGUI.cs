@@ -56,6 +56,10 @@ namespace SilviaGUI
 
             notificationIcon = new NotificationIcon();
             mainPanel = new MainPanel();
+
+#if DEBUG 
+            mainPanel.Show();
+#endif
         }
     }
 }

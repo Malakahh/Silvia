@@ -54,9 +54,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\FadeHeader.xaml.cs">
-      <DependentUpon>FadeHeader.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Plugin.cs" />
     <Compile Include="PluginLoader.cs" />
     <Compile Include="SilviaApp.cs" />
@@ -69,13 +66,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\FadeHeader.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images\" />
+    <Page Include="Themes\WindowHeaderStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\WindowStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

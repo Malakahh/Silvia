@@ -43,7 +43,7 @@ namespace SilviaGUI
                     SilviaGUI.mainPanel.Hide();
                 else
                     SilviaGUI.mainPanel.Show();
-                
+
             }
             else if (e.Button == MouseButtons.Right)
             {

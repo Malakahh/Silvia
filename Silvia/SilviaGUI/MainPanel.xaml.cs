@@ -24,10 +24,8 @@ namespace SilviaGUI
         {
             InitializeComponent();
 
-            //header.Opacity = 0;
-
-            //Storyboard s = (Storyboard)TryFindResource("sb");
-            //s.Begin();
+            Storyboard s = (Storyboard)TryFindResource("sb");
+            s.Begin();
 
             header.PreviewMouseDown += Header_PreviewMouseDown;
         }
@@ -36,7 +34,6 @@ namespace SilviaGUI
         {
             if (Mouse.LeftButton == MouseButtonState.Pressed)
             {
-                Console.WriteLine("Move!");
                 this.DragMove();
             }
         }
