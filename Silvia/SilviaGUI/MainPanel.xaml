@@ -6,12 +6,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SilviaGUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="400"
+        Title="MainWindow" Height="400" Width="250"
         WindowStyle="None"
         AllowsTransparency="True">
-    <!--<Window.Background>
-        <SolidColorBrush Opacity="0.5" Color="#000000"/>
-    </Window.Background>-->
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -29,7 +26,22 @@
         <StaticResource ResourceKey="SilviaGUIWindow"/>
     </Window.Style>
     <Grid>
-        <Image x:Name="avatarImg" Source="avatar.png" HorizontalAlignment="center" Height="200" Margin="0,10,0,0" VerticalAlignment="Top"/>
-        <StackPanel x:Name="header" Style="{StaticResource ResourceKey=SilviaGUIWindowHeader}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="11*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Image x:Name="avatarImg" Source="avatar.png" HorizontalAlignment="center" Grid.Row="0" Grid.ColumnSpan="2" Margin="10,10,10,5" VerticalAlignment="Top" Opacity="1"/>
+        <StackPanel x:Name="header" Style="{StaticResource ResourceKey=SilviaGUIWindowHeader}" Orientation="Horizontal" FlowDirection="RightToLeft" Grid.ColumnSpan="2">
+            <Image x:Name="headerOpen" Style="{StaticResource ResourceKey=SilviaGUIWindowHeaderIcon}" />
+        </StackPanel>
+        <Button x:Name="BtnHide" Content="Hide" Grid.Row="1" Grid.Column="0" Style="{StaticResource ResourceKey=SilviaGUIButton}" />
+        <Button x:Name="BtnRefresh" Content="Refresh" Grid.Row="1" Grid.Column="1" Style="{StaticResource ResourceKey=SilviaGUIButton}" />
+        <TextBox x:Name="InputCmd" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource ResourceKey=SilviaGUITextBox}"/>
+
     </Grid>
 </Window>

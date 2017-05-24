@@ -5,5 +5,8 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="WindowStyle.xaml"/>
         <ResourceDictionary Source="WindowHeaderStyle.xaml"/>
+        <ResourceDictionary Source="WindowHeaderIconStyle.xaml"/>
+        <ResourceDictionary Source="Button.xaml"/>
+        <ResourceDictionary Source="TextBox.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

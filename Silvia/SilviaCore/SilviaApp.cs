@@ -25,6 +25,7 @@ namespace SilviaCore
         {
             logger.Trace("Application Init");
 
+            Images.Init();
             PluginLoader.LoadPlugins();
 
             OnApplicationInit?.Invoke();
