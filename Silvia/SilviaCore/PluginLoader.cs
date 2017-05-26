@@ -9,13 +9,20 @@ using NLog;
 
 namespace SilviaCore
 {
-    class PluginLoader
+    public class PluginLoader
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private static string pluginPath = Directory.GetCurrentDirectory() + "\\Plug-ins";
 
-        internal static List<Plugin> Plugins;
+        internal static Dictionary<string, Plugin> plugins;
+        public static Dictionary<string, Plugin> Plugins
+        {
+            get
+            {
+                return new Dictionary<string, Plugin>(plugins);
+            }
+        }
 
         internal static void LoadPlugins()
         {
@@ -23,8 +30,8 @@ namespace SilviaCore
 
             string[] potentialPlugins = Directory.GetFiles(pluginPath, "*.dll", SearchOption.AllDirectories);
             logger.Info("Plugin DLLs found: {0}", potentialPlugins.Length);
-
-            Plugins = new List<Plugin>(potentialPlugins.Length);
+            
+            plugins = new Dictionary<string, Plugin>(potentialPlugins.Length);
 
             foreach (string filePath in potentialPlugins)
             {
@@ -38,15 +45,20 @@ namespace SilviaCore
 
                         if (p != null)
                         {
-                            logger.Info("Loaded plugin: {0}", filePath.Split('\\').Last());
+                            string dllName = filePath.Split('\\').Last();
 
-                            Plugins.Add(p);
+
+                            logger.Info("Loaded plugin: {0}", dllName);
+
+                            plugins.Add(dllName, p);
+
+                            p.OnLoad();
                         }
                     }
                 }
             }
 
-            logger.Info("Plugins found: {0}", Plugins.Count);
+            logger.Info("Plugins found: {0}", plugins.Count);
         }
 
         private static void CreatePluginDirectory()

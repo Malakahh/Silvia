@@ -6,7 +6,7 @@
         <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="Background" Value="#AAAAAA"/>
+        <Setter Property="Background" Value="#7F7F7F"/>
         <Setter Property="Opacity" Value="0"/>
         <Setter Property="Orientation" Value="Horizontal"/>
         <Setter Property="FlowDirection" Value="RightToLeft"/>

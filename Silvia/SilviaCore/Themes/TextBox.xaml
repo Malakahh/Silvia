@@ -27,9 +27,6 @@
                             <Setter Property="Foreground" Value="#FFFFFF"/>
                             <Setter Property="Text" Value=""/>
                         </Trigger>
-                        <!--<Trigger Property="IsFocused" Value="False">
-                            <Setter Property="Text" Value="_"/>
-                        </Trigger>-->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

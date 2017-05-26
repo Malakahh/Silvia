@@ -14,8 +14,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Drawing;
 using System.IO;
-using SilviaCore;
 using System.Windows.Forms.Integration;
+using SilviaCore;
+using SilviaCore.Commands;
+using NLog;
 
 namespace SilviaGUI
 {
@@ -24,6 +26,8 @@ namespace SilviaGUI
     /// </summary>
     public partial class MainPanel : Window
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public MainPanel()
         {
             InitializeComponent();
@@ -48,6 +52,10 @@ namespace SilviaGUI
         {
             if (e.Key == Key.Enter)
             {
+                logger.Trace("CmdInput: " + InputCmd.Text);
+
+                SilviaCore.Commands.CmdHandler.Cmds.ForEach(x => x.InvokeWithStringParams(InputCmd.Text));
+
                 InputCmd.Text = "";
             }
         }
@@ -74,7 +82,7 @@ namespace SilviaGUI
 
         private void HeaderOpen_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            throw new NotImplementedException();
+            SilviaGUI.options.Show();
         }
 
         private void SilviaApp_OnApplicationInit()

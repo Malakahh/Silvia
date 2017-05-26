@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
+using SilviaCore.Commands;
 
 namespace SilviaGUI
 {
@@ -49,6 +50,7 @@ namespace SilviaGUI
     {
         internal static NotificationIcon notificationIcon;
         internal static MainPanel mainPanel;
+        internal static Options options;
 
         public SilviaGUI()
         {
@@ -56,6 +58,11 @@ namespace SilviaGUI
 
             notificationIcon = new NotificationIcon();
             mainPanel = new MainPanel();
+            options = new Options();
+
+            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
+                "^hide$",
+                (args) => { mainPanel.Hide(); }));
 
 #if DEBUG 
             mainPanel.Show();

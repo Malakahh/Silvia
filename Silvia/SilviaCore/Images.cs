@@ -15,7 +15,7 @@ namespace SilviaCore
 
         public static class HeaderIcons
         {
-            internal static Color Normal = Color.FromArgb(0xFF, 0x77, 0x77, 0x77);
+            internal static Color Normal = Color.FromArgb(0xFF, 0x00, 0x00, 0x00);
             internal static Color Highlight = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
 
             public static Image OpenNormal;

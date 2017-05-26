@@ -19,14 +19,37 @@ namespace SilviaGUI
         {
             string iconPath = Directory.GetCurrentDirectory() + "\\" + iconName;
 
-            nIcon = new NotifyIcon();
-            nIcon.Icon = new Icon(iconPath);
-            nIcon.Text = SilviaApp.AppNameFull;
-            nIcon.Visible = true;
-
+            nIcon = new NotifyIcon()
+            {
+                Icon = new Icon(iconPath),
+                Text = SilviaApp.AppNameFull,
+                Visible = true
+            };
             nIcon.MouseUp += NIcon_MouseUp;
 
             SilviaApp.OnApplicationClosing += SilviaApp_OnApplicationClosing;
+            SilviaApp.OnApplicationInit += SilviaApp_OnApplicationInit;
+        }
+
+        private void SilviaApp_OnApplicationInit()
+        {
+            nIcon.ContextMenu = new ContextMenu();
+            nIcon.ContextMenu.MenuItems.Add("Hide", (s,e) => SilviaGUI.mainPanel.Hide());
+            nIcon.ContextMenu.MenuItems.Add("Show", (s,e) => SilviaGUI.mainPanel.Show());
+            nIcon.ContextMenu.MenuItems.Add("Options", (s,e) => SilviaGUI.options.Show());
+            nIcon.ContextMenu.MenuItems.Add("-");
+            nIcon.ContextMenu.MenuItems.Add("Close Application", (s, e) => SilviaApp.Close());
+
+            nIcon.ContextMenu.MenuItems[0].Visible = SilviaGUI.mainPanel.IsVisible;
+            nIcon.ContextMenu.MenuItems[1].Visible = !SilviaGUI.mainPanel.IsVisible;
+
+            SilviaGUI.mainPanel.IsVisibleChanged += MainPanel_IsVisibleChanged;
+        }
+
+        private void MainPanel_IsVisibleChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
+        {
+            nIcon.ContextMenu.MenuItems[0].Visible = SilviaGUI.mainPanel.IsVisible;
+            nIcon.ContextMenu.MenuItems[1].Visible = !SilviaGUI.mainPanel.IsVisible;
         }
 
         private void SilviaApp_OnApplicationClosing()
@@ -44,10 +67,6 @@ namespace SilviaGUI
                 else
                     SilviaGUI.mainPanel.Show();
 
-            }
-            else if (e.Button == MouseButtons.Right)
-            {
-                SilviaApp.Close();
             }
         }
     }
