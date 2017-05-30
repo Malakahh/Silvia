@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NLog;
+using System.Runtime.CompilerServices;
 
 namespace SilviaCore.Commands
 {
@@ -16,19 +17,55 @@ namespace SilviaCore.Commands
 
         public CommandAction Action;
         public string Pattern { get; private set; }
+        public string Prediction { get; private set; }
+        public bool IsHidden { get; set; }
 
         public Command(string pattern, CommandAction action)
         {
             Pattern = pattern;
             Action = action;
+
+            string ptrn = Pattern;
+
+            if (ptrn.StartsWith("^"))
+                ptrn = ptrn.Remove(0, 1);
+
+            if (ptrn.EndsWith("$"))
+                ptrn = ptrn.Remove(ptrn.Length - 1, 1);
+
+            foreach (string s in ptrn.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (Regex.Match(s, "^[a-zA-Z0-9]+$").Success)
+                {
+                    Prediction += s;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsMatch(string input)
+        {
+            return Regex.Match(input, Pattern).Success;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool PredictMatch(string input)
+        {
+            if (input.Length <= Prediction.Length)
+            {
+                return Prediction.StartsWith(input, StringComparison.OrdinalIgnoreCase);
+            }
+            else
+            {
+                string[] ptrnSplit = Pattern.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] predSplit = Prediction.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                return Prediction.StartsWith(input.Substring(0, Prediction.Length), StringComparison.OrdinalIgnoreCase) && ptrnSplit.Length > predSplit.Length;
+            }
         }
 
         public void InvokeWithStringParams(string input)
         {
-            List<string> args = new List<string>();
-            Match isMatch = Regex.Match(input, Pattern);
-
-            if (isMatch.Success)
+            if (IsMatch(input))
             {
                 logger.Trace("Executing command: " + input);
 
@@ -59,6 +96,11 @@ namespace SilviaCore.Commands
         public static bool operator !=(Command lhs, Command rhs)
         {
             return !(lhs == rhs);
+        }
+
+        public override string ToString()
+        {
+            return Prediction;
         }
     }
 }

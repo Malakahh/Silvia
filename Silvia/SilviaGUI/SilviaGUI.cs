@@ -60,10 +60,6 @@ namespace SilviaGUI
             mainPanel = new MainPanel();
             options = new Options();
 
-            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
-                "^hide$",
-                (args) => { mainPanel.Hide(); }));
-
 #if DEBUG 
             mainPanel.Show();
 #endif

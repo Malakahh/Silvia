@@ -69,10 +69,17 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CmdTabCompletion.xaml.cs">
+      <DependentUpon>CmdTabCompletion.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainPanel.xaml.cs">
       <DependentUpon>MainPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="NotificationIcon.cs" />
+    <Page Include="CmdTabCompletion.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

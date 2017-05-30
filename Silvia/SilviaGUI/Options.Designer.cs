@@ -41,12 +41,14 @@
             this.chkBoxStartOnBoot = new System.Windows.Forms.CheckBox();
             this.btnAccept = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.btnPluginVisibility = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btnPluginVisibility);
             this.groupBox1.Controls.Add(this.listBoxPlugIns);
             this.groupBox1.Controls.Add(this.chkBoxDelayedLoad);
             this.groupBox1.Controls.Add(this.btnUnload);
@@ -176,6 +178,16 @@
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
+            // btnPluginVisibility
+            // 
+            this.btnPluginVisibility.Enabled = false;
+            this.btnPluginVisibility.Location = new System.Drawing.Point(223, 231);
+            this.btnPluginVisibility.Name = "btnPluginVisibility";
+            this.btnPluginVisibility.Size = new System.Drawing.Size(213, 43);
+            this.btnPluginVisibility.TabIndex = 5;
+            this.btnPluginVisibility.Text = "Hide";
+            this.btnPluginVisibility.UseVisualStyleBackColor = true;
+            // 
             // Options
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -210,5 +222,6 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.CheckBox chkBoxDelayedLoad;
         private System.Windows.Forms.ListBox listBoxPlugIns;
+        private System.Windows.Forms.Button btnPluginVisibility;
     }
 }

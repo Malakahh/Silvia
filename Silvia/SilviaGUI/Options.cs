@@ -42,8 +42,6 @@ namespace SilviaGUI
                 list.Add(new Tuple<string, string>(kv.Value.PluginName + " (" + kv.Key + ")", kv.Key));
             }
 
-            Console.WriteLine("Adding list");
-
             listBoxPlugIns.DataSource = list;
             listBoxPlugIns.DisplayMember = "Item1";
             listBoxPlugIns.ValueMember = "Item2";

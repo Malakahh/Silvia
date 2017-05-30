@@ -28,47 +28,187 @@ namespace SilviaGUI
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
+        private CmdTabCompletion tabCompletion = new CmdTabCompletion();
+
         public MainPanel()
         {
             InitializeComponent();
 
             ElementHost.EnableModelessKeyboardInterop(this);
 
-            SilviaCore.SilviaApp.OnApplicationInit += SilviaApp_OnApplicationInit;
-
             Storyboard s = (Storyboard)TryFindResource("sb");
             s.Begin();
 
+            SilviaCore.SilviaApp.OnApplicationInit += SilviaApp_OnApplicationInit;
             header.PreviewMouseDown += Header_PreviewMouseDown;
             headerOpen.MouseEnter += HeaderOpen_MouseEnter;
             headerOpen.MouseLeave += HeaderOpen_MouseLeave;
             headerOpen.PreviewMouseDown += HeaderOpen_PreviewMouseDown;
             BtnHide.Click += BtnHide_Click;
             BtnRefresh.Click += BtnRefresh_Click;
-            InputCmd.KeyDown += InputCmd_KeyDown;
+            InputCmd.PreviewKeyDown += InputCmd_PreviewKeyDown;
+            InputCmd.TextChanged += InputCmd_TextChanged;
+            InputCmd.GotFocus += InputCmd_GotFocus;
+            InputCmd.LostFocus += InputCmd_LostFocus;
+            InputCmd.PreviewMouseDown += InputCmd_PreviewMouseDown;
+            this.LocationChanged += MainPanel_LocationChanged;
+            this.IsVisibleChanged += MainPanel_IsVisibleChanged;
+
+            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
+                "^hide$",
+                (args) => {
+                    this.Hide();
+                    tabCompletion.Hide();
+                }));
         }
 
-        private void InputCmd_KeyDown(object sender, KeyEventArgs e)
+        private void PositionCmdTabCompletionWindow()
         {
-            if (e.Key == Key.Enter)
+            tabCompletion.Width = InputCmd.ActualWidth;
+            tabCompletion.Left = this.Left + InputCmd.BorderThickness.Left + InputCmd.Margin.Left - InputCmd.BorderThickness.Left;
+
+            if (this.Top + this.ActualHeight + tabCompletion.ActualHeight < SystemParameters.WorkArea.Bottom)
+                tabCompletion.Top = this.Top + test.RowDefinitions[2].Offset + InputCmd.Margin.Top + InputCmd.ActualHeight;
+            else
+                tabCompletion.Top = this.Top + test.RowDefinitions[2].Offset + InputCmd.Margin.Top - tabCompletion.ActualHeight;
+        }
+
+        private void MainPanel_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue)
             {
-                logger.Trace("CmdInput: " + InputCmd.Text);
-
-                SilviaCore.Commands.CmdHandler.Cmds.ForEach(x => x.InvokeWithStringParams(InputCmd.Text));
-
-                InputCmd.Text = "";
+                tabCompletion.Hide();
             }
+        }
+
+        private void MainPanel_LocationChanged(object sender, EventArgs e)
+        {
+            PositionCmdTabCompletionWindow();
         }
 
         private void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            foreach (Plugin p in SilviaCore.PluginLoader.Plugins.Values)
+            {
+                p.Refresh();
+            }
         }
 
         private void BtnHide_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
         }
+
+        private void SilviaApp_OnApplicationInit()
+        {
+            headerOpen.Source = SilviaCore.Images.HeaderIcons.OpenNormal.ToWPFImageSource();
+        }
+
+    #region InputCmdEvents
+
+        private void InputCmd_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            tabCompletion.Deselect();
+        }
+
+        private void InputCmd_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!isTabCompletionOngoing)
+            {
+                if (InputCmd.Text.Length >= tabCompletion.MinimumLength)
+                {
+                    tabCompletion.UpdateEntires(InputCmd.Text);
+
+                    if (tabCompletion.Entries.Count > 0)
+                    {
+                        tabCompletion.Show();
+                        this.Focus();
+                    }
+                    else
+                    {
+                        tabCompletion.Hide();
+                    }
+                }
+                else
+                {
+                    tabCompletion.Hide();
+                }
+            }
+        }
+
+        private void InputCmd_LostFocus(object sender, RoutedEventArgs e)
+        {
+            tabCompletion.Hide();
+        }
+
+        private void InputCmd_GotFocus(object sender, RoutedEventArgs e)
+        {
+            PositionCmdTabCompletionWindow();
+            InputCmd_TextChanged(this, null);
+        }
+
+        bool isTabCompletionOngoing = false;
+        private void InputCmd_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            //For tab completion
+            if (e.Key == Key.Up)
+            {
+                isTabCompletionOngoing = true;
+
+                Command cmd = tabCompletion.SelectPreviousItem();
+                InputCmd.Text = cmd.Prediction;
+                InputCmd.CaretIndex = InputCmd.Text.Length;
+            }
+            else if (e.Key == Key.Tab && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)))
+            {
+                e.Handled = true;
+
+                isTabCompletionOngoing = true;
+
+                Command cmd = tabCompletion.SelectPreviousItem();
+                InputCmd.Text = cmd.Prediction;
+                InputCmd.CaretIndex = InputCmd.Text.Length;
+            }
+            else if (e.Key == Key.Tab)
+            {
+                e.Handled = true;
+
+                isTabCompletionOngoing = true;
+
+                Command cmd = tabCompletion.SelectNextItem();
+                InputCmd.Text = cmd.Prediction;
+                InputCmd.CaretIndex = InputCmd.Text.Length;
+            }
+            else if (e.Key == Key.Down)
+            {
+                isTabCompletionOngoing = true;
+
+                Command cmd = tabCompletion.SelectNextItem();
+                InputCmd.Text = cmd.Prediction;
+                InputCmd.CaretIndex = InputCmd.Text.Length;
+            }
+            else
+            {
+                //Disable tab completion
+                isTabCompletionOngoing = false;
+            }
+
+            //Done writing
+            if (e.Key == Key.Enter && InputCmd.Text != "")
+            {
+                logger.Trace("CmdInput: " + InputCmd.Text);
+
+                SilviaCore.Commands.CmdHandler.Cmds.ForEach(x => x.InvokeWithStringParams(InputCmd.Text));
+                InputCmd.Text = "";
+            }
+            if (e.Key == Key.Escape)
+            {
+                InputCmd.Text = "";
+            }
+        }
+
+    #endregion
+    #region HeaderEvents
 
         private void HeaderOpen_MouseLeave(object sender, MouseEventArgs e)
         {
@@ -85,11 +225,6 @@ namespace SilviaGUI
             SilviaGUI.options.Show();
         }
 
-        private void SilviaApp_OnApplicationInit()
-        {
-            headerOpen.Source = SilviaCore.Images.HeaderIcons.OpenNormal.ToWPFImageSource();
-        }
-
         private void Header_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Mouse.LeftButton == MouseButtonState.Pressed)
@@ -97,5 +232,7 @@ namespace SilviaGUI
                 this.DragMove();
             }
         }
+
+    #endregion
     }
 }
