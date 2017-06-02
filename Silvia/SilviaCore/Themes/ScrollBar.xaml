@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:SilviaGUI">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ControlTemplate x:Key="SilviaScrollBar" TargetType="{x:Type ScrollBar}">
         <Grid x:Name="Bg" SnapsToDevicePixels="True" Width="10">
             <Grid.RowDefinitions>

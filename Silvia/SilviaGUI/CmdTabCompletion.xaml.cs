@@ -41,6 +41,9 @@ namespace SilviaGUI
 
         public Command SelectNextItem()
         {
+            if (Entries.Count == 0)
+                return null;
+
             if (TabCompletionList.SelectedIndex < Entries.Count - 1)
                 TabCompletionList.SelectedIndex++;
             else
@@ -51,6 +54,9 @@ namespace SilviaGUI
 
         public Command SelectPreviousItem()
         {
+            if (Entries.Count == 0)
+                return null;
+
             if (TabCompletionList.SelectedIndex > 0)
                 TabCompletionList.SelectedIndex--;
             else

@@ -24,13 +24,13 @@ namespace SilviaGUI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainPanel : Window
+    public partial class MainPanel : SilviaCore.Controls.StickyWindow
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private CmdTabCompletion tabCompletion = new CmdTabCompletion();
 
-        public MainPanel()
+        public MainPanel() : base()
         {
             InitializeComponent();
 
@@ -41,6 +41,7 @@ namespace SilviaGUI
 
             SilviaCore.SilviaApp.OnApplicationInit += SilviaApp_OnApplicationInit;
             header.PreviewMouseDown += Header_PreviewMouseDown;
+            this.PreviewMouseUp += Header_PreviewMouseUp;
             headerOpen.MouseEnter += HeaderOpen_MouseEnter;
             headerOpen.MouseLeave += HeaderOpen_MouseLeave;
             headerOpen.PreviewMouseDown += HeaderOpen_PreviewMouseDown;
@@ -122,6 +123,7 @@ namespace SilviaGUI
                     if (tabCompletion.Entries.Count > 0)
                     {
                         tabCompletion.Show();
+                        PositionCmdTabCompletionWindow();
                         this.Focus();
                     }
                     else
@@ -156,7 +158,7 @@ namespace SilviaGUI
                 isTabCompletionOngoing = true;
 
                 Command cmd = tabCompletion.SelectPreviousItem();
-                InputCmd.Text = cmd.Prediction;
+                InputCmd.Text = cmd?.Prediction;
                 InputCmd.CaretIndex = InputCmd.Text.Length;
             }
             else if (e.Key == Key.Tab && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)))
@@ -166,7 +168,7 @@ namespace SilviaGUI
                 isTabCompletionOngoing = true;
 
                 Command cmd = tabCompletion.SelectPreviousItem();
-                InputCmd.Text = cmd.Prediction;
+                InputCmd.Text = cmd?.Prediction;
                 InputCmd.CaretIndex = InputCmd.Text.Length;
             }
             else if (e.Key == Key.Tab)
@@ -176,7 +178,7 @@ namespace SilviaGUI
                 isTabCompletionOngoing = true;
 
                 Command cmd = tabCompletion.SelectNextItem();
-                InputCmd.Text = cmd.Prediction;
+                InputCmd.Text = cmd?.Prediction;
                 InputCmd.CaretIndex = InputCmd.Text.Length;
             }
             else if (e.Key == Key.Down)
@@ -184,7 +186,7 @@ namespace SilviaGUI
                 isTabCompletionOngoing = true;
 
                 Command cmd = tabCompletion.SelectNextItem();
-                InputCmd.Text = cmd.Prediction;
+                InputCmd.Text = cmd?.Prediction;
                 InputCmd.CaretIndex = InputCmd.Text.Length;
             }
             else
@@ -227,12 +229,21 @@ namespace SilviaGUI
 
         private void Header_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed)
             {
-                this.DragMove();
+                CaptureMouse();
+                this.StartDrag();
             }
         }
 
-    #endregion
+        private void Header_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Released)
+            {
+                this.StopDrag();
+            }
+        }
+
+        #endregion
     }
 }

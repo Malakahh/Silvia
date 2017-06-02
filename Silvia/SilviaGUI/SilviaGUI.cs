@@ -62,6 +62,7 @@ namespace SilviaGUI
 
 #if DEBUG 
             mainPanel.Show();
+            new Window1().Show();
 #endif
         }
     }

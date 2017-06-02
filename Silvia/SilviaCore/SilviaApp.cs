@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SilviaCore.Commands;
 using NLog;
 
 namespace SilviaCore
@@ -26,6 +27,7 @@ namespace SilviaCore
             logger.Trace("Application Init");
 
             Images.Init();
+            InitBaseCommands();
             PluginLoader.LoadPlugins();
 
             OnApplicationInit?.Invoke();
@@ -44,6 +46,21 @@ namespace SilviaCore
             OnApplicationClosing?.Invoke();
 
             logger.Trace("Application close");
+        }
+
+        private static void InitBaseCommands()
+        {
+            CmdHandler.AddCmd(new Command(
+                "^close$",
+                (args) => {
+                    Close();
+                }));
+
+            CmdHandler.AddCmd(new Command(
+                "^exit$",
+                (args) => {
+                    Close();
+                }));
         }
     }
 }

@@ -10,5 +10,6 @@
         <ResourceDictionary Source="ListBoxItem.xaml"/>
         <ResourceDictionary Source="ScrollBar.xaml"/>
         <ResourceDictionary Source="RepeatButton.xaml"/>
+        <ResourceDictionary Source="StickyWindow.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
