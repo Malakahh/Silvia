@@ -11,35 +11,23 @@ namespace SilviaCore.Controls
 {
     public class StickyWindow : Window
     {
-        public static int Offset { get; } = 10;
+        public static int StickyRange { get; } = 10;
 
-        private static uint idCount = 0;
         private static List<StickyWindow> allStickyWindows = new List<StickyWindow>();
+        private static Vector xAxis = new Vector(1, 0);
+        private static Vector mouseNullPos = new Vector(-1, -1);
 
-        public enum IntersectDetail { None, Left, Right, Top, Bottom, Encompassed }
-
-        public uint Id { get; set; } = idCount++;
-
-        private (double x1, double x2) HorizontalExtremes;
-        private (double y1, double y2) VerticalExtremes;
-        private Vector CenterPoint;
-        private Vector prevCenterPoint = new Vector(-1, -1);
+        public bool IsMasterWindow { get; set; } = false;
 
         private bool isDragging = false;
+        private bool isSticking = false;
+        private StickyWindow stickyParent;
         private Point dragAnchorPoint = new Point(-1, -1);
 
         public StickyWindow()
         {
             this.ResizeMode = ResizeMode.NoResize;
             allStickyWindows.Add(this);
-
-            this.LocationChanged += StickyWindow_LocationChanged;
-            this.IsVisibleChanged += StickyWindow_IsVisibleChanged;
-        }
-
-        private void StickyWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            CalculateWindowPoints();
         }
 
         ~StickyWindow()
@@ -47,130 +35,79 @@ namespace SilviaCore.Controls
             allStickyWindows.Remove(this);
         }
 
-        private void SnapTo(StickyWindow sw, IntersectDetail intersect)
+        //private enum RelativePosition { Left, Right, Top, Bottom }
+        //private RelativePosition GetVectorDirection(Vector v1, Vector v2)
+        //{
+        //    double deg = Vector.AngleBetween(v1 - v2, xAxis);
+
+        //    //Normalise deg
+        //    deg %= 360;
+        //    if (deg < 0)
+        //        deg += 360;
+            
+        //    if (deg <= 45 || deg >= 315)
+        //    {
+        //        return RelativePosition.Right;
+        //    }
+        //    else if (deg < 135 && deg > 45)
+        //    {
+        //        return RelativePosition.Top;
+        //    }
+        //    else if (deg <= 225 && deg >= 135)
+        //    {
+        //        return RelativePosition.Left;
+        //    }
+        //    else
+        //    {
+        //        return RelativePosition.Bottom;
+        //    }
+        //}
+
+        private void StickTo(StickyWindow sw)
         {
-            switch (intersect)
+            bool withinVerticalBounds = Top + Height > sw.Top && Top < sw.Top + sw.Height;
+            bool withinHorizontalBounds = Left + Width > sw.Left && Left < sw.Left + sw.Width;
+
+            isSticking = true;
+            stickyParent = sw;
+
+            //Stick to sw.left
+            if (withinVerticalBounds && 
+                Left + Width + StickyRange > sw.Left - StickyRange &&
+                Left + Width - StickyRange < sw.Left + StickyRange)
             {
-                case IntersectDetail.Left:
-                    this.Left = sw.Left + sw.Width;
-                    break;
-                case IntersectDetail.Right:
-                    this.Left = sw.Left - this.Width;
-                    break;
-                case IntersectDetail.Top:
-                    this.Top = sw.Top + sw.Height;
-                    break;
-                case IntersectDetail.Bottom:
-                    this.Top = sw.Top - this.Height;
-                    break;
+                Left = sw.Left - Width;
             }
 
-            if (intersect != IntersectDetail.None && intersect != IntersectDetail.Encompassed)
+            //Stick to sw.left + sw.width
+            else if (withinVerticalBounds && 
+                Left - StickyRange < sw.Left + sw.Width + StickyRange &&
+                Left + StickyRange > sw.Left + sw.Width - StickyRange)
             {
-                SetMouseDragPoint();
-            }
-        }
-
-        private void StickyWindow_LocationChanged(object sender, EventArgs e)
-        {
-            if (prevCenterPoint == new Vector(-1, -1))
-            {
-                prevCenterPoint = CenterPoint;
-                return;
+                Left = sw.Left + sw.Width;
             }
 
-            CalculateWindowPoints();
-
-            foreach (StickyWindow sw in allStickyWindows)
+            //Stick to sw.top
+            else if (withinHorizontalBounds &&
+                Top + Height + StickyRange > sw.Top - StickyRange &&
+                Top + Height - StickyRange < sw.Top + StickyRange)
             {
-                if (sw == this)
-                {
-                    continue;
-                }
-
-                var p1 = (CenterPoint - sw.CenterPoint);
-                var p2 = (prevCenterPoint - sw.CenterPoint);
-
-                if (p1.Length <= p2.Length)
-                {
-                    IntersectDetail intersectPoint = this.Intersects(sw);
-                    Console.WriteLine("Intersect: " + intersectPoint.ToString());
-                    
-                    SnapTo(sw, intersectPoint);
-                    
-                }
-                else
-                {
-                    Console.WriteLine("Away: " + sw.Title);
-                }
+                Top = sw.Top - Height;
             }
 
-            prevCenterPoint = CenterPoint;
-        }
-
-        private IntersectDetail Intersects(StickyWindow other)
-        {
-            if (other == null || other == this)
-                return IntersectDetail.None;
-
-            //Check if in bounds
-            if (HorizontalExtremes.x1 <= other.HorizontalExtremes.x2 &&
-                HorizontalExtremes.x2 >= other.HorizontalExtremes.x1 &&
-                VerticalExtremes.y1 <= other.VerticalExtremes.y2 &&
-                VerticalExtremes.y2 >= other.VerticalExtremes.y1)
+            //Stick to sw.top + sw.height
+            else if (withinHorizontalBounds &&
+                Top - StickyRange < sw.Top + sw.Height + StickyRange &&
+                Top + StickyRange > sw.Top + sw.Height - StickyRange)
             {
-                //Check if encompassed
-                if (HorizontalExtremes.x1 >= other.HorizontalExtremes.x1 &&
-                    HorizontalExtremes.x2 <= other.HorizontalExtremes.x2 &&
-                    VerticalExtremes.y1 >= other.VerticalExtremes.y1 &&
-                    VerticalExtremes.y2 <= other.VerticalExtremes.y2)
-                {
-                    return IntersectDetail.Encompassed;
-                }
-
-                double deg = Vector.AngleBetween(other.CenterPoint - CenterPoint, new Vector(1,0));
-
-                //Normalize deg
-                deg %= 360;
-                if (deg < 0)
-                {
-                    deg += 360;
-                }
-
-                if (deg <= 45 || deg >= 315)
-                {
-                    return IntersectDetail.Right;
-                }
-                else if (deg < 135 && deg > 45)
-                {
-                    return IntersectDetail.Top;
-                }
-                else if (deg <= 225 && deg >= 135)
-                {
-                    return IntersectDetail.Left;
-                }
-                else if (deg < 315 && deg > 225)
-                {
-                    return IntersectDetail.Bottom;
-                }
+                Top = sw.Top + sw.Height;
             }
 
-            return IntersectDetail.None;
-        }
-
-        private void CalculateWindowPoints()
-        {
-            HorizontalExtremes = (
-                Left - Offset,
-                Left + Width + Offset);
-
-            VerticalExtremes = (
-                Top - Offset,
-                Top + Height + Offset);
-
-            CenterPoint = new Vector(
-                HorizontalExtremes.x1 + Width / 2 + Offset,
-                VerticalExtremes.y1 + Height / 2 + Offset);
+            else
+            {
+                isSticking = false;
+                stickyParent = null;
+            }
         }
 
         private void SetMouseDragPoint()
@@ -193,13 +130,41 @@ namespace SilviaCore.Controls
             this.PreviewMouseMove += StickyWindow_PreviewMouseMove;
         }
 
+        Vector prevMousePos = mouseNullPos;
         private void StickyWindow_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (isDragging)
             {
-                var currentPoint = PointToScreen(e.GetPosition(this));
-                Left = currentPoint.X - dragAnchorPoint.X;
-                Top = currentPoint.Y - dragAnchorPoint.Y;
+                Vector currentPoint = PointToScreen(e.GetPosition(this)).ToVector();
+
+                if (!isSticking)
+                {
+                    Left = currentPoint.X - dragAnchorPoint.X;
+                    Top = currentPoint.Y - dragAnchorPoint.Y;
+
+                    foreach (StickyWindow sw in allStickyWindows)
+                    {
+                        if (sw != this)
+                        {
+                            StickTo(sw);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    //Are we far enough away?
+                    if (stickyParent != null && !(currentPoint.X > stickyParent.Left - StickyRange &&
+                        currentPoint.X < stickyParent.Left + stickyParent.Width + StickyRange &&
+                        currentPoint.Y > stickyParent.Top - StickyRange &&
+                        currentPoint.Y < stickyParent.Top + stickyParent.Height + StickyRange))
+                    {
+                        isSticking = false;
+                        stickyParent = null;
+                    }
+                }
+
+                prevMousePos = Control.MousePosition.ToVector();
             }
         }
 
@@ -209,7 +174,6 @@ namespace SilviaCore.Controls
             this.PreviewMouseMove -= StickyWindow_PreviewMouseMove;
             ReleaseMouseCapture();
             dragAnchorPoint = new Point(-1, -1);
-            prevCenterPoint = new Vector(-1, -1);
         }
     }
 }

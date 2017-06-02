@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using System.Windows;
 
 namespace SilviaCore
 {
@@ -27,6 +28,16 @@ namespace SilviaCore
             }
 
             return bi;
+        }
+
+        public static Vector ToVector(this System.Drawing.Point p)
+        {
+            return new Vector(p.X, p.Y);
+        }
+
+        public static Vector ToVector(this System.Windows.Point p)
+        {
+            return new Vector(p.X, p.Y);
         }
     }
 }
