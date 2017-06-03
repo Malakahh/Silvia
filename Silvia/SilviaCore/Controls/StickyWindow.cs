@@ -20,10 +20,9 @@ namespace SilviaCore.Controls
         public bool IsMasterWindow { get; set; } = false;
 
         private bool isDragging = false;
-        private bool isSticking = false;
         private StickyWindow stickyParent;
         private List<StickyWindow> stickyChildren = new List<StickyWindow>();
-        private Point dragAnchorPoint = new Point(-1, -1);
+        private Point dragAnchorPoint;
 
         public StickyWindow()
         {
@@ -47,7 +46,6 @@ namespace SilviaCore.Controls
                 Left + Width - StickyRange < sw.Left + StickyRange)
             {
                 Left = sw.Left - Width;
-                SetSticky();
             }
 
             //Stick to sw.left + sw.width
@@ -56,7 +54,6 @@ namespace SilviaCore.Controls
                 Left + StickyRange > sw.Left + sw.Width - StickyRange)
             {
                 Left = sw.Left + sw.Width;
-                SetSticky();
             }
 
             //Stick to sw.top
@@ -65,7 +62,6 @@ namespace SilviaCore.Controls
                 Top + Height - StickyRange < sw.Top + StickyRange)
             {
                 Top = sw.Top - Height;
-                SetSticky();
             }
 
             //Stick to sw.top + sw.height
@@ -74,13 +70,6 @@ namespace SilviaCore.Controls
                 Top + StickyRange > sw.Top + sw.Height - StickyRange)
             {
                 Top = sw.Top + sw.Height;
-                SetSticky();
-            }
-
-            void SetSticky()
-            {
-                isSticking = true;
-                stickyParent = sw;
             }
         }
 
@@ -134,7 +123,7 @@ namespace SilviaCore.Controls
                         sw.Top += diff.Y;
                     }
                 }
-                else if (!isSticking)
+                else
                 {
                     Left += diff.X;
                     Top += diff.Y;
@@ -148,35 +137,6 @@ namespace SilviaCore.Controls
                         }
                     }
                 }
-                else
-                {
-                    //Predictions
-                    Vector predTopLeft = new Vector(
-                        Left + diff.X,
-                        Top + diff.Y);
-
-                    Vector predTopRight = new Vector(
-                        predTopLeft.X + Width,
-                        predTopLeft.Y);
-
-                    Vector predBottomLeft = new Vector(
-                        predTopLeft.X,
-                        predTopLeft.Y + Height);
-
-                    Vector predBottomRight = new Vector(
-                        predTopLeft.X + Width,
-                        predTopLeft.Y + Height);
-
-                    if (stickyParent != null &&
-                        !IsWithinBounds(predTopLeft, stickyParent, StickyRange) &&
-                        !IsWithinBounds(predTopRight, stickyParent, StickyRange) &&
-                        !IsWithinBounds(predBottomLeft, stickyParent, StickyRange) &&
-                        !IsWithinBounds(predBottomRight, stickyParent, StickyRange))
-                    {
-                        isSticking = false;
-                        stickyParent = null;
-                    }
-                }
             }
         }
 
@@ -185,7 +145,6 @@ namespace SilviaCore.Controls
             isDragging = false;
             this.PreviewMouseMove -= StickyWindow_PreviewMouseMove;
             ReleaseMouseCapture();
-            dragAnchorPoint = new Point(-1, -1);
 
             if (!IsMasterWindow)
             {
@@ -202,7 +161,6 @@ namespace SilviaCore.Controls
                         IsWithinBounds(new Vector(sw.Left, sw.Top + sw.Height), this, 1) ||
                         IsWithinBounds(new Vector(sw.Left + sw.Width, sw.Top + sw.Height), this, 1)))))
                     {
-                        isSticking = true;
                         stickyParent = sw;
                         stickyParent.stickyChildren.Add(this);
                     }
