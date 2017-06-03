@@ -159,6 +159,7 @@ namespace SilviaCore.Controls
             this.PreviewMouseMove -= StickyWindow_PreviewMouseMove;
             ReleaseMouseCapture();
 
+            //TODO: All of this logic should be handled better. Maybe a hashtable where the master is the key?
             if (!IsMasterWindow)
             {
                 foreach (StickyWindow sw in allStickyWindows)
