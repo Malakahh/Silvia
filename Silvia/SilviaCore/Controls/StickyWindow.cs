@@ -14,14 +14,30 @@ namespace SilviaCore.Controls
         public static int StickyRange { get; } = 10;
 
         private static List<StickyWindow> allStickyWindows = new List<StickyWindow>();
+        private static Dictionary<StickyWindow, HashSet<StickyWindow>> masterSlaveTrees = new Dictionary<StickyWindow, HashSet<StickyWindow>>();
         private static Vector xAxis = new Vector(1, 0);
         private static Vector mouseNullPos = new Vector(-1, -1);
 
-        public bool IsMasterWindow { get; set; } = false;
+        private bool _isMasterWindow = false;
+        public bool IsMasterWindow
+        {
+            get
+            {
+                return _isMasterWindow;
+            }
+
+            set
+            {
+                if (value)
+                    masterSlaveTrees.Add(this, new HashSet<StickyWindow>());
+                else
+                    masterSlaveTrees.Remove(this);
+
+                _isMasterWindow = value;
+            }
+        }
 
         private bool isDragging = false;
-        private StickyWindow stickyParent;
-        private List<StickyWindow> stickyChildren = new List<StickyWindow>();
         private Point dragAnchorPoint;
 
         public StickyWindow()
@@ -98,10 +114,16 @@ namespace SilviaCore.Controls
             CaptureMouse();
             this.PreviewMouseMove += StickyWindow_PreviewMouseMove;
 
-            if (!IsMasterWindow && stickyParent != null)
+            if (!IsMasterWindow)
             {
-                this.stickyParent?.stickyChildren.Remove(this);
-                this.stickyParent = null;
+                foreach (var kv in masterSlaveTrees)
+                {
+                    if (kv.Value.Contains(this))
+                    {
+                        kv.Value.Remove(this);
+                        break;
+                    }
+                }
             }
         }
 
@@ -128,7 +150,7 @@ namespace SilviaCore.Controls
                     Left += diff.X;
                     Top += diff.Y;
 
-                    foreach (StickyWindow sw in stickyChildren)
+                    foreach (StickyWindow sw in masterSlaveTrees[this])
                     {
                         sw.Left += diff.X;
                         sw.Top += diff.Y;
@@ -159,7 +181,6 @@ namespace SilviaCore.Controls
             this.PreviewMouseMove -= StickyWindow_PreviewMouseMove;
             ReleaseMouseCapture();
 
-            //TODO: All of this logic should be handled better. Maybe a hashtable where the master is the key?
             if (!IsMasterWindow)
             {
                 foreach (StickyWindow sw in allStickyWindows)
@@ -175,20 +196,21 @@ namespace SilviaCore.Controls
                         IsWithinBounds(new Vector(sw.Left, sw.Top + sw.Height), this, 1) ||
                         IsWithinBounds(new Vector(sw.Left + sw.Width, sw.Top + sw.Height), this, 1)))))
                     {
-                        StickyWindow connectedTo = sw;
-
-                        while (connectedTo.stickyParent != null)
+                        if (sw.IsMasterWindow)
                         {
-                            connectedTo = connectedTo.stickyParent;
+                            masterSlaveTrees[sw].Add(this);
                         }
-
-                        if (connectedTo.IsMasterWindow)
+                        else
                         {
-                            connectedTo.stickyChildren.Add(this);
+                            foreach (var kv in masterSlaveTrees)
+                            {
+                                if (kv.Value.Contains(sw))
+                                {
+                                    masterSlaveTrees[kv.Key].Add(this);
+                                    return;
+                                }
+                            }
                         }
-
-                        stickyParent = connectedTo;
-                        break;
                     }
                 }
             }
