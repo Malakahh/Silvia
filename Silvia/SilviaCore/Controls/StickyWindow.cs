@@ -35,7 +35,7 @@ namespace SilviaCore.Controls
             allStickyWindows.Remove(this);
         }
 
-        private void StickTo(StickyWindow sw)
+        private bool StickTo(StickyWindow sw)
         {
             bool withinVerticalBounds = Top + Height > sw.Top && Top < sw.Top + sw.Height;
             bool withinHorizontalBounds = Left + Width > sw.Left && Left < sw.Left + sw.Width;
@@ -71,6 +71,12 @@ namespace SilviaCore.Controls
             {
                 Top = sw.Top + sw.Height;
             }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void SetMouseDragPoint()
@@ -91,7 +97,12 @@ namespace SilviaCore.Controls
             SetMouseDragPoint();
             CaptureMouse();
             this.PreviewMouseMove += StickyWindow_PreviewMouseMove;
-            this.stickyParent?.stickyChildren.Remove(this);
+
+            if (!IsMasterWindow && stickyParent != null)
+            {
+                this.stickyParent?.stickyChildren.Remove(this);
+                this.stickyParent = null;
+            }
         }
 
         private bool IsWithinBounds(Vector v, StickyWindow checkAgainst, double offset)
@@ -132,8 +143,10 @@ namespace SilviaCore.Controls
                     {
                         if (sw != this)
                         {
-                            StickTo(sw);
-                            break;
+                            if (StickTo(sw))
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -161,8 +174,20 @@ namespace SilviaCore.Controls
                         IsWithinBounds(new Vector(sw.Left, sw.Top + sw.Height), this, 1) ||
                         IsWithinBounds(new Vector(sw.Left + sw.Width, sw.Top + sw.Height), this, 1)))))
                     {
-                        stickyParent = sw;
-                        stickyParent.stickyChildren.Add(this);
+                        StickyWindow connectedTo = sw;
+
+                        while (connectedTo.stickyParent != null)
+                        {
+                            connectedTo = connectedTo.stickyParent;
+                        }
+
+                        if (connectedTo.IsMasterWindow)
+                        {
+                            connectedTo.stickyChildren.Add(this);
+                        }
+
+                        stickyParent = connectedTo;
+                        break;
                     }
                 }
             }

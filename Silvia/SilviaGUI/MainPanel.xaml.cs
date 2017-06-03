@@ -233,7 +233,6 @@ namespace SilviaGUI
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                CaptureMouse();
                 this.DragStart();
             }
         }
