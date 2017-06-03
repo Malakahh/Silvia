@@ -22,6 +22,18 @@ namespace SilviaGUI
         public Window1()
         {
             InitializeComponent();
+            this.PreviewMouseDown += Window1_PreviewMouseDown;
+            this.PreviewMouseUp += Window1_PreviewMouseUp;
+        }
+
+        private void Window1_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            this.DragStop();
+        }
+
+        private void Window1_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragStart();
         }
     }
 }

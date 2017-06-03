@@ -36,6 +36,8 @@ namespace SilviaGUI
 
             ElementHost.EnableModelessKeyboardInterop(this);
 
+            this.IsMasterWindow = true;
+
             Storyboard s = (Storyboard)TryFindResource("sb");
             s.Begin();
 
@@ -232,7 +234,7 @@ namespace SilviaGUI
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 CaptureMouse();
-                this.StartDrag();
+                this.DragStart();
             }
         }
 
@@ -240,7 +242,7 @@ namespace SilviaGUI
         {
             if (e.LeftButton == MouseButtonState.Released)
             {
-                this.StopDrag();
+                this.DragStop();
             }
         }
 
