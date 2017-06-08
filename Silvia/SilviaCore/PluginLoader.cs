@@ -15,12 +15,38 @@ namespace SilviaCore
 
         private static string pluginPath = Directory.GetCurrentDirectory() + "\\Plug-ins";
 
-        internal static Dictionary<string, Plugin> plugins;
+        private static Dictionary<string, Plugin> plugins;
         public static Dictionary<string, Plugin> Plugins
         {
             get
             {
                 return new Dictionary<string, Plugin>(plugins);
+            }
+        }
+
+        public static void AddPluginDll(string path)
+        {
+            Assembly asm = Assembly.LoadFile(path);
+
+            foreach (Type t in asm.GetTypes())
+            {
+                if (t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(Plugin)))
+                {
+                    Plugin p = asm.CreateInstance(t.FullName) as Plugin;
+
+                    if (p != null)
+                    {
+                        string dllName = path.Split('\\').Last();
+
+                        logger.Info("Loaded plugin: {0}", dllName);
+
+                        plugins.Add(dllName, p);
+
+                        Settings.CreatePluginSettingsDir(p.PluginName);
+
+                        p.OnLoad();
+                    }
+                }
             }
         }
 
@@ -35,27 +61,7 @@ namespace SilviaCore
 
             foreach (string filePath in potentialPlugins)
             {
-                Assembly asm = Assembly.LoadFile(filePath);
-
-                foreach (Type t in asm.GetTypes())
-                {
-                    if (t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(Plugin)))
-                    {
-                        Plugin p = asm.CreateInstance(t.FullName) as Plugin;
-
-                        if (p != null)
-                        {
-                            string dllName = filePath.Split('\\').Last();
-
-
-                            logger.Info("Loaded plugin: {0}", dllName);
-
-                            plugins.Add(dllName, p);
-
-                            p.OnLoad();
-                        }
-                    }
-                }
+                AddPluginDll(filePath);
             }
 
             logger.Info("Plugins found: {0}", plugins.Count);

@@ -39,5 +39,17 @@ namespace SilviaCore
         {
             return new Vector(p.X, p.Y);
         }
+
+        /// <summary>
+        /// Gets strictly the name of the executing assembly.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns>Name of the executing assembly, or empty string on error.</returns>
+        public static string AssemblyName(this Type t)
+        {
+            string s = t.Assembly.ToString().Split(',')[0];
+
+            return s ?? "";
+        }
     }
 }

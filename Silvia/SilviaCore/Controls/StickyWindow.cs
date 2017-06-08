@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using SilviaCore.Properties;
+using Newtonsoft;
 
 namespace SilviaCore.Controls
 {
@@ -17,7 +19,10 @@ namespace SilviaCore.Controls
         private static Dictionary<StickyWindow, HashSet<StickyWindow>> masterSlaveTrees = new Dictionary<StickyWindow, HashSet<StickyWindow>>();
         private static Vector xAxis = new Vector(1, 0);
         private static Vector mouseNullPos = new Vector(-1, -1);
+        private static uint idGlobalCnt { get; set; } = 0;
+        private static WindowPositions settings;
 
+        public uint Id { get; private set; }
         private bool _isMasterWindow = false;
         public bool IsMasterWindow
         {
@@ -42,13 +47,31 @@ namespace SilviaCore.Controls
 
         public StickyWindow()
         {
+            this.Id = idGlobalCnt++;
             this.ResizeMode = ResizeMode.NoResize;
             allStickyWindows.Add(this);
+            SilviaApp.OnApplicationInit += SilviaApp_OnApplicationInit;
+            SilviaApp.OnApplicationClosing += SilviaApp_OnApplicationClosing;
         }
 
-        ~StickyWindow()
+        private void SilviaApp_OnApplicationClosing()
         {
             allStickyWindows.Remove(this);
+        }
+
+        private void SilviaApp_OnApplicationInit()
+        {
+            if (settings == null)
+            {
+                settings = WindowPositions.Create();
+            }
+
+            settings.Windows.Add(new PosSetting()
+            {
+                Id = this.Id,
+                Left = this.Left,
+                Top = this.Top
+            });
         }
 
         private bool StickTo(StickyWindow sw)
@@ -214,6 +237,39 @@ namespace SilviaCore.Controls
                     }
                 }
             }
+        }
+    }
+
+    public class StickyWindowSettings : Settings
+    {
+        public uint Id;
+    }
+
+    class PosSetting : StickyWindowSettings
+    {
+        public double Left;
+        public double Top;
+    }
+
+    class WindowPositions : Settings
+    {
+        public List<PosSetting> Windows = new List<PosSetting>();
+
+        public WindowPositions()
+        {
+            SilviaApp.OnApplicationClosing += SilviaApp_OnApplicationClosing;
+        }
+
+        public static WindowPositions Create()
+        {
+            var loaded = Load<WindowPositions>();
+
+            return loaded;
+        }
+
+        private void SilviaApp_OnApplicationClosing()
+        {
+            Save(this);
         }
     }
 }
