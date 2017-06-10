@@ -39,20 +39,31 @@ namespace SilviaCore.Controls
             }
         }
 
+        private bool hasAppliedSettings = false;
         private bool isDragging = false;
         private Point dragAnchorPoint;
+
+        protected StickyWindowSettings settings;
 
         public StickyWindow()
         {
             this.ResizeMode = ResizeMode.NoResize;
             allStickyWindows.Add(this);
             this.IsVisibleChanged += StickyWindow_IsVisibleChanged;
+            SilviaApp.OnApplicationClosing += SilviaApp_OnApplicationClosing;
+        }
+
+        private void SilviaApp_OnApplicationClosing()
+        {
+            settings.Left = Left;
+            settings.Top = Top;
         }
 
         private void StickyWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if ((bool)e.NewValue)
+            if ((bool)e.NewValue && !hasAppliedSettings)
             {
+                hasAppliedSettings = true;
                 ApplySettings();
             }
         }
@@ -224,22 +235,27 @@ namespace SilviaCore.Controls
 
         public virtual void ApplySettings(StickyWindowSettings settings = null)
         {
-            if (settings.Left == -1)
+            double left = Screen.PrimaryScreen.Bounds.Width / 2 - Width / 2;
+            double top = Screen.PrimaryScreen.Bounds.Height / 2 - Height / 2;
+
+            if (settings?.Left == -1)
             {
-                settings.Left = Screen.PrimaryScreen.Bounds.Width / 2 - Width / 2;
+                settings.Left = left;
             }
 
-            if (settings.Top == -1)
+            if (settings?.Top == -1)
             {
-                settings.Top = Screen.PrimaryScreen.Bounds.Height / 2 - Height / 2;
+                settings.Top = top;
             }
 
-            this.Left = settings.Left;
-            this.Top = settings.Top;
+            this.Left = settings?.Left ?? left;
+            this.Top = settings?.Top ?? top;
+
+            this.settings = settings;
         }
     }
 
-    public class StickyWindowSettings : Settings
+    public abstract class StickyWindowSettings : Settings
     {
         public double Left = -1;
         public double Top = -1;

@@ -128,11 +128,11 @@ namespace SilviaCore
 
             object o = list[0];
             string type = o.GetType().FullName;
-            string path = settingsPath + "\\" + o.GetType().AssemblyName() + "\\" + GetFullNameOfSettings(o.GetType());
+            string path = settingsPath + "\\" + o.GetType().AssemblyName() + "\\" + GetFullNameOfSettings(o.GetType()) + ".json";
 
             using (StreamWriter sw = new StreamWriter(path))
             {
-                sw.Write(JsonConvert.SerializeObject(o, typeof(object), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+                sw.Write(JsonConvert.SerializeObject(o, typeof(object), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented }));
             }
 
             logger.Trace("Saved settings: " + path + "...");
