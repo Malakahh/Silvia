@@ -46,15 +46,15 @@ namespace SilviaGUI
     ///     <MyNamespace:CustomControl1/>
     ///
     /// </summary>
-    public class SilviaGUI : System.Windows.Controls.Control
+    public class SilviaGUI : SilviaCore.Plugin
     {
         internal static NotificationIcon notificationIcon;
         internal static MainPanel mainPanel;
         internal static Options options;
 
-        public SilviaGUI()
+        public override void OnLoad()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(SilviaGUI), new FrameworkPropertyMetadata(typeof(SilviaGUI)));
+            Console.WriteLine("Init, yaay");
 
             notificationIcon = new NotificationIcon();
             mainPanel = new MainPanel();
@@ -65,6 +65,11 @@ namespace SilviaGUI
             new Window1().Show();
             new Window1().Show();
 #endif
+        }
+
+        public override string PluginName
+        {
+            get { return "SilviaGUI"; }
         }
     }
 }

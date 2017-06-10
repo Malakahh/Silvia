@@ -28,6 +28,7 @@ namespace SilviaCore
 
             Images.Init();
             InitBaseCommands();
+            Settings.LoadSettings();
             PluginLoader.LoadPlugins();
 
             OnApplicationInit?.Invoke();
@@ -37,13 +38,15 @@ namespace SilviaCore
             {
                 System.Windows.Forms.Application.DoEvents();
             }
+
+            OnApplicationClosing?.Invoke();
+
+            Settings.SaveSettings();
         }
 
         public static void Close()
         {
             running = false;
-
-            OnApplicationClosing?.Invoke();
 
             logger.Trace("Application close");
         }

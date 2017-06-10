@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace SilviaBootstrapper
 {
@@ -11,8 +12,7 @@ namespace SilviaBootstrapper
         [STAThread]
         static void Main(string[] args)
         {
-            SilviaGUI.SilviaGUI hi = new SilviaGUI.SilviaGUI();
-
+            SilviaCore.PluginLoader.AddDllToPotentialPlugins(Directory.GetCurrentDirectory() + "\\SilviaGUI.dll");
             SilviaCore.SilviaApp.Init();
         }
     }

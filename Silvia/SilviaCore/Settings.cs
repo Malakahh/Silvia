@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using NLog;
+using System.Runtime.CompilerServices;
 
 namespace SilviaCore
 {
@@ -14,7 +15,12 @@ namespace SilviaCore
         private static string settingsPath = "";
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        internal static void CreatePluginSettingsDir(string pluginName)
+        /// <summary>
+        /// Dictionary -> Assembly.Namespaces.Classname, json
+        /// </summary>
+        private static Dictionary<string, object> allSettings = new Dictionary<string, object>();
+
+        static Settings()
         {
             if (settingsPath == "")
             {
@@ -24,7 +30,16 @@ namespace SilviaCore
                     Directory.CreateDirectory(settingsPath);
                 }
             }
+        }
 
+        public Settings()
+        {
+            string fullName = GetFullNameOfSettings(this.GetType());
+            allSettings.Add(fullName, this);
+        }
+
+        internal static void CreatePluginSettingsDir(string pluginName)
+        {
             string pluginSettingsPath = settingsPath + "\\" + pluginName;
             if (!Directory.Exists(pluginSettingsPath))
             {
@@ -32,58 +47,101 @@ namespace SilviaCore
             }
         }
 
-        public static void Save(Settings s)
+        internal static void LoadSettings()
         {
-            string assemblyName = s.GetType().AssemblyName() + ".dll";
-            string path = "";
+            string[] directories = Directory.GetDirectories(settingsPath);
 
-            if (assemblyName != "" && PluginLoader.Plugins.ContainsKey(assemblyName))
+            foreach (string dir in directories)
             {
-                string pluginName = PluginLoader.Plugins[assemblyName].PluginName;
-                path = settingsPath + "\\" + pluginName + "\\" + s.GetType().Name + ".json";
+                string[] filePaths = Directory.GetFiles(dir);
+                foreach (string fp in filePaths)
+                {
+                    //object o = Load(fp);
+
+                    //if (o != null)
+                    //{
+                    //    string fullClassName = fp.Split('\\').Last();
+
+                    //    if (!allSettings.ContainsKey(fullClassName))
+                    //    {
+                    //        allSettings.Add(fullClassName, new List<object>());
+                    //    }
+
+                    //    allSettings[fullClassName].Add(o);
+                    //}
+
+                    Load(fp);
+                }
             }
-            else
+        }
+
+        internal static void SaveSettings()
+        {
+            foreach (var kv in allSettings)
             {
-                path = settingsPath + "\\" + s.GetType().Name + ".json";
+                Save(kv.Value);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string GetFullNameOfSettings(Type t)
+        {
+            return t.AssemblyName() + "." + t.FullName;
+        }
+
+        public static T GetSettings<T>()
+        {
+            string fullName = GetFullNameOfSettings(typeof(T));
+            if (allSettings.ContainsKey(fullName))
+            {
+                if (TryCast<T>(allSettings[fullName], out T ret))
+                {
+                    return ret;
+                }
+            }
+
+            return default(T);
+        }
+
+        private static bool TryCast<T>(object toCast, out T result)
+        {
+            if (toCast is T)
+            {
+                result = (T)toCast;
+                return true;
+            }
+
+            result = default(T);
+            return false;
+        }
+
+        private static void Save(object o)
+        {
+            string type = o.GetType().FullName;
+            string path = settingsPath + "\\" + o.GetType().AssemblyName() + "\\" + GetFullNameOfSettings(o.GetType());
 
             using (StreamWriter sw = new StreamWriter(path))
             {
-                sw.Write(JsonConvert.SerializeObject(s));
+                sw.Write(JsonConvert.SerializeObject(o, typeof(object), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
             }
 
             logger.Trace("Saved settings: " + path + "...");
         }
 
-        public static T Load<T>()
+        private static object Load(string path)
         {
-            string assemblyName = typeof(T).AssemblyName() + ".dll";
-            string path = "";
-
-            if (assemblyName != "" && PluginLoader.Plugins.ContainsKey(assemblyName))
-            {
-                string pluginName = PluginLoader.Plugins[assemblyName].PluginName;
-                path = settingsPath + "\\" + pluginName + "\\" + typeof(T).Name + ".json";
-            }
-            else
-            {
-                path = settingsPath + "\\" + typeof(T).Name + ".json";
-            }
-
             if (File.Exists(path))
             {
                 string json = File.ReadAllText(path);
 
-                T s = JsonConvert.DeserializeObject<T>(json);
+                object obj = JsonConvert.DeserializeObject(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
 
                 logger.Trace("Loaded settings: " + path + ".dll");
 
-                return s;
+                return obj;
             }
-            else
-            {
-                return default(T);
-            }
+
+            return null;
         }
     }
 }

@@ -14,8 +14,9 @@ namespace SilviaCore
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private static string pluginPath = Directory.GetCurrentDirectory() + "\\Plug-ins";
+        private static List<string> potentialPlugins = new List<string>();
 
-        private static Dictionary<string, Plugin> plugins;
+        private static Dictionary<string, Plugin> plugins = new Dictionary<string, Plugin>();
         public static Dictionary<string, Plugin> Plugins
         {
             get
@@ -24,7 +25,16 @@ namespace SilviaCore
             }
         }
 
-        public static void AddPluginDll(string path)
+        /// <summary>
+        /// Used during boot process of SilviaCore and SilviaBootstrapper. Has no effect outside of those.
+        /// </summary>
+        /// <param name="path"></param>
+        public static void AddDllToPotentialPlugins(string path)
+        {
+            potentialPlugins.Add(path);
+        }
+
+        private static void SpawnPlugin(string path)
         {
             Assembly asm = Assembly.LoadFile(path);
 
@@ -54,14 +64,12 @@ namespace SilviaCore
         {
             CreatePluginDirectory();
 
-            string[] potentialPlugins = Directory.GetFiles(pluginPath, "*.dll", SearchOption.AllDirectories);
-            logger.Info("Plugin DLLs found: {0}", potentialPlugins.Length);
-            
-            plugins = new Dictionary<string, Plugin>(potentialPlugins.Length);
+            potentialPlugins.AddRange(Directory.GetFiles(pluginPath, "*.dll", SearchOption.AllDirectories));
+            logger.Info("Plugin DLLs found: {0}", potentialPlugins.Count);
 
             foreach (string filePath in potentialPlugins)
             {
-                AddPluginDll(filePath);
+                SpawnPlugin(filePath);
             }
 
             logger.Info("Plugins found: {0}", plugins.Count);

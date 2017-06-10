@@ -21,6 +21,15 @@ using NLog;
 
 namespace SilviaGUI
 {
+    class Hi : SilviaCore.Controls.StickyWindowSettings
+    {
+        public string TestString = "T";
+
+        public Hi() : base()
+        {
+        }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -63,6 +72,22 @@ namespace SilviaGUI
                     this.Hide();
                     tabCompletion.Hide();
                 }));
+
+            var test = Settings.GetSettings<Hi>();
+
+            if (test == null)
+            {
+                test = new Hi()
+                {
+                    TestString = "T is for Test",
+                    Left = 2,
+                    Top = 3
+                };
+            }
+            else
+            {
+                test.TestString = "THIS HAS BEEN LOADED AND EDITED";
+            }
         }
 
         private void PositionCmdTabCompletionWindow()
