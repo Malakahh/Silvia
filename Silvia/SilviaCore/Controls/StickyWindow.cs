@@ -11,7 +11,7 @@ using Newtonsoft;
 
 namespace SilviaCore.Controls
 {
-    public class StickyWindow : Window
+    public class StickyWindow : Window, ISettingsApplier<StickyWindowSettings>
     {
         public static int StickyRange { get; } = 10;
 
@@ -19,9 +19,7 @@ namespace SilviaCore.Controls
         private static Dictionary<StickyWindow, HashSet<StickyWindow>> masterSlaveTrees = new Dictionary<StickyWindow, HashSet<StickyWindow>>();
         private static Vector xAxis = new Vector(1, 0);
         private static Vector mouseNullPos = new Vector(-1, -1);
-        private static uint IdGlobalCnt { get; set; } = 0;
 
-        public uint Id { get; private set; }
         private bool _isMasterWindow = false;
         public bool IsMasterWindow
         {
@@ -46,21 +44,17 @@ namespace SilviaCore.Controls
 
         public StickyWindow()
         {
-            this.Id = IdGlobalCnt++;
             this.ResizeMode = ResizeMode.NoResize;
             allStickyWindows.Add(this);
-            SilviaApp.OnApplicationInit += SilviaApp_OnApplicationInit;
-            SilviaApp.OnApplicationClosing += SilviaApp_OnApplicationClosing;
+            this.IsVisibleChanged += StickyWindow_IsVisibleChanged;
         }
 
-        private void SilviaApp_OnApplicationClosing()
+        private void StickyWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            allStickyWindows.Remove(this);
-        }
-
-        private void SilviaApp_OnApplicationInit()
-        {
-
+            if ((bool)e.NewValue)
+            {
+                ApplySettings();
+            }
         }
 
         private bool StickTo(StickyWindow sw)
@@ -227,13 +221,28 @@ namespace SilviaCore.Controls
                 }
             }
         }
+
+        public virtual void ApplySettings(StickyWindowSettings settings = null)
+        {
+            if (settings.Left == -1)
+            {
+                settings.Left = Screen.PrimaryScreen.Bounds.Width / 2 - Width / 2;
+            }
+
+            if (settings.Top == -1)
+            {
+                settings.Top = Screen.PrimaryScreen.Bounds.Height / 2 - Height / 2;
+            }
+
+            this.Left = settings.Left;
+            this.Top = settings.Top;
+        }
     }
 
     public class StickyWindowSettings : Settings
     {
-        public uint Id;
-        public double Left;
-        public double Top;
+        public double Left = -1;
+        public double Top = -1;
 
         public StickyWindowSettings() : base()
         { }

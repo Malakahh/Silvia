@@ -18,7 +18,7 @@ namespace SilviaCore
         /// <summary>
         /// Dictionary -> Assembly.Namespaces.Classname, json
         /// </summary>
-        private static Dictionary<string, object> allSettings = new Dictionary<string, object>();
+        private static Dictionary<string, List<object>> allSettings = new Dictionary<string, List<object>>();
 
         static Settings()
         {
@@ -35,7 +35,13 @@ namespace SilviaCore
         public Settings()
         {
             string fullName = GetFullNameOfSettings(this.GetType());
-            allSettings.Add(fullName, this);
+
+            if (!allSettings.ContainsKey(fullName))
+            {
+                allSettings.Add(fullName, new List<object>());
+            }
+
+            allSettings[fullName].Add(this);
         }
 
         internal static void CreatePluginSettingsDir(string pluginName)
@@ -89,12 +95,12 @@ namespace SilviaCore
             return t.AssemblyName() + "." + t.FullName;
         }
 
-        public static T GetSettings<T>()
+        public static T GetSettings<T>(int index)
         {
             string fullName = GetFullNameOfSettings(typeof(T));
-            if (allSettings.ContainsKey(fullName))
+            if (allSettings.ContainsKey(fullName) && allSettings[fullName].Count > 0)
             {
-                if (TryCast<T>(allSettings[fullName], out T ret))
+                if (TryCast<T>(allSettings[fullName][index], out T ret))
                 {
                     return ret;
                 }
@@ -115,8 +121,12 @@ namespace SilviaCore
             return false;
         }
 
-        private static void Save(object o)
+        private static void Save(List<object> list)
         {
+            if (list.Count <= 0)
+                return;
+
+            object o = list[0];
             string type = o.GetType().FullName;
             string path = settingsPath + "\\" + o.GetType().AssemblyName() + "\\" + GetFullNameOfSettings(o.GetType());
 
@@ -134,7 +144,17 @@ namespace SilviaCore
             {
                 string json = File.ReadAllText(path);
 
-                object obj = JsonConvert.DeserializeObject(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                object obj;
+
+                try
+                {
+                    obj = JsonConvert.DeserializeObject(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                }
+                catch (Newtonsoft.Json.JsonSerializationException ex)
+                {
+                    logger.Error(ex.ToString());
+                    return null;
+                }
 
                 logger.Trace("Loaded settings: " + path + ".dll");
 

@@ -18,18 +18,10 @@ using System.Windows.Forms.Integration;
 using SilviaCore;
 using SilviaCore.Commands;
 using NLog;
+using SilviaCore.Controls;
 
 namespace SilviaGUI
 {
-    class Hi : SilviaCore.Controls.StickyWindowSettings
-    {
-        public string TestString = "T";
-
-        public Hi() : base()
-        {
-        }
-    }
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -50,7 +42,6 @@ namespace SilviaGUI
             Storyboard s = (Storyboard)TryFindResource("sb");
             s.Begin();
 
-            SilviaCore.SilviaApp.OnApplicationInit += SilviaApp_OnApplicationInit;
             header.PreviewMouseDown += Header_PreviewMouseDown;
             this.PreviewMouseUp += Header_PreviewMouseUp;
             headerOpen.MouseEnter += HeaderOpen_MouseEnter;
@@ -73,21 +64,26 @@ namespace SilviaGUI
                     tabCompletion.Hide();
                 }));
 
-            var test = Settings.GetSettings<Hi>();
+            headerOpen.Source = SilviaCore.Images.HeaderIcons.OpenNormal.ToWPFImageSource();
+        }
 
-            if (test == null)
+        class Test : StickyWindowSettings
+        { }
+
+        public override void ApplySettings(StickyWindowSettings settings = null)
+        {
+            Test t = Settings.GetSettings<Test>(0);
+
+            if (t == null)
             {
-                test = new Hi()
+                t = new Test()
                 {
-                    TestString = "T is for Test",
-                    Left = 2,
-                    Top = 3
+                    //Left = 100,
+                    //Top = 100
                 };
             }
-            else
-            {
-                test.TestString = "THIS HAS BEEN LOADED AND EDITED";
-            }
+
+            base.ApplySettings(t);
         }
 
         private void PositionCmdTabCompletionWindow()
@@ -125,11 +121,6 @@ namespace SilviaGUI
         private void BtnHide_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
-        }
-
-        private void SilviaApp_OnApplicationInit()
-        {
-            headerOpen.Source = SilviaCore.Images.HeaderIcons.OpenNormal.ToWPFImageSource();
         }
 
     #region InputCmdEvents

@@ -51,5 +51,10 @@ namespace SilviaCore
 
             return s ?? "";
         }
+
+        //public static System.Windows.Forms.Screen GetScreen(this Window window)
+        //{
+        //    return System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(window).Handle);
+        //}
     }
 }

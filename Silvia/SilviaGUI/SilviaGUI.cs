@@ -54,16 +54,14 @@ namespace SilviaGUI
 
         public override void OnLoad()
         {
-            Console.WriteLine("Init, yaay");
-
             notificationIcon = new NotificationIcon();
             mainPanel = new MainPanel();
             options = new Options();
 
 #if DEBUG 
             mainPanel.Show();
-            new Window1().Show();
-            new Window1().Show();
+            //new Window1().Show();
+            //new Window1().Show();
 #endif
         }
 
