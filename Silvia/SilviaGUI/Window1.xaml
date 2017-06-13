@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SilviaGUI"
         xmlns:Test="clr-namespace:SilviaCore.Controls;assembly=SilviaCore"
         mc:Ignorable="d"
-        Title="Window1" Height="300" Width="300"
+        Title="Window1" Height="500" Width="500"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
@@ -18,7 +18,9 @@
     <Window.Style>
         <StaticResource ResourceKey="SilviaStickyWindow"/>
     </Window.Style>
-    <Grid>
+    <Grid Margin="10,10,10,10">
+        <Test:PatchworkGrid DefaultItemStyle="{StaticResource ResourceKey=SilviaButton}" NumRows="3" NumColumns="4" CellHeight="100" CellWidth="100">
 
+        </Test:PatchworkGrid>
     </Grid>
 </Test:StickyWindow>

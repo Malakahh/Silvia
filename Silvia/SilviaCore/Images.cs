@@ -22,6 +22,15 @@ namespace SilviaCore
             public static Image OpenHighlight;
         }
 
+        public static class Icons
+        {
+            internal static Color Normal = Color.FromArgb(0x7C, 0xFF, 0xFF, 0xFF);
+            internal static Color Highlight = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
+
+            public static Image PlusNormal;
+            public static Image PlusHighlight;
+        }
+
         public static void Init()
         {
             logger.Trace("Loading and processing images...");
@@ -37,6 +46,15 @@ namespace SilviaCore
             Images.HeaderIcons.OpenHighlight = imgProc.ApplyColorMask(
                 Bitmap.FromFile(headerIconOpenPath),
                 HeaderIcons.Highlight);
+
+            string plusIconPath = imgPath + "iconPlus.png";
+            logger.Trace(plusIconPath);
+            Images.Icons.PlusNormal = imgProc.ApplyColorMask(
+                Bitmap.FromFile(plusIconPath),
+                Icons.Normal);
+            Images.Icons.PlusHighlight = imgProc.ApplyColorMask(
+                Bitmap.FromFile(plusIconPath),
+                Icons.Highlight);
 
             logger.Trace("Images loaded and processsed");
         }
