@@ -58,11 +58,11 @@ namespace SilviaGUI
             mainPanel = new MainPanel();
             options = new Options();
 
-#if DEBUG 
+
             mainPanel.Show();
             new Window1().Show();
             //new Window1().Show();
-#endif
+
         }
 
         public override string PluginName

@@ -1,11 +1,12 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:Themes="clr-namespace:SilviaCore.Themes">
     <Style x:Key="SilviaWindowHeader" TargetType="{x:Type StackPanel}">
         <Setter Property="Height" Value="30"/>
         <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="Background" Value="#7F7F7F"/>
+        <Setter Property="Background" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=SpecialBrush}"/>
         <Setter Property="Opacity" Value="0"/>
         <Setter Property="Orientation" Value="Horizontal"/>
         <Setter Property="FlowDirection" Value="RightToLeft"/>

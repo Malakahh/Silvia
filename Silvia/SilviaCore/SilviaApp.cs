@@ -26,10 +26,21 @@ namespace SilviaCore
         {
             logger.Trace("Application Init");
 
-            Images.Init();
             InitBaseCommands();
+
+            Settings.CreatePluginSettingsDir("SilviaCore");
             Settings.LoadSettings();
+
+            Themes.ThemeSettings.Init();
+            Images.Init();
+
             PluginLoader.LoadPlugins();
+
+            //Call Plugin.OnLoad
+            foreach (Plugin p in PluginLoader.Plugins.Values)
+            {
+                p.OnLoad();
+            }
 
             OnApplicationInit?.Invoke();
 

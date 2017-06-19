@@ -51,12 +51,16 @@ namespace SilviaCore.Controls
             allStickyWindows.Add(this);
             this.IsVisibleChanged += StickyWindow_IsVisibleChanged;
             SilviaApp.OnApplicationClosing += SilviaApp_OnApplicationClosing;
+            Effects.WindowBlur.Apply(this);
         }
 
         private void SilviaApp_OnApplicationClosing()
         {
-            settings.Left = Left;
-            settings.Top = Top;
+            if (settings != null)
+            {
+                settings.Left = Left;
+                settings.Top = Top;
+            }
         }
 
         private void StickyWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -235,6 +239,11 @@ namespace SilviaCore.Controls
 
         public virtual void ApplySettings(StickyWindowSettings settings = null)
         {
+            if (settings == null)
+            {
+                throw new SettingsException("StickyWindowSettings provided are null.");
+            }
+
             double left = Screen.PrimaryScreen.Bounds.Width / 2 - Width / 2;
             double top = Screen.PrimaryScreen.Bounds.Height / 2 - Height / 2;
 

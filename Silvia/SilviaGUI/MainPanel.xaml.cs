@@ -63,6 +63,48 @@ namespace SilviaGUI
                     this.Hide();
                     tabCompletion.Hide();
                 }));
+            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
+                "^hide$",
+                (args) => {
+                    this.Hide();
+                    tabCompletion.Hide();
+                }));
+            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
+                "^hide$",
+                (args) => {
+                    this.Hide();
+                    tabCompletion.Hide();
+                }));
+            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
+                "^hide$",
+                (args) => {
+                    this.Hide();
+                    tabCompletion.Hide();
+                }));
+            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
+                "^hide$",
+                (args) => {
+                    this.Hide();
+                    tabCompletion.Hide();
+                }));
+            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
+                "^hide$",
+                (args) => {
+                    this.Hide();
+                    tabCompletion.Hide();
+                }));
+            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
+                "^hide$",
+                (args) => {
+                    this.Hide();
+                    tabCompletion.Hide();
+                }));
+            SilviaCore.Commands.CmdHandler.AddCmd(new Command(
+                "^hide$",
+                (args) => {
+                    this.Hide();
+                    tabCompletion.Hide();
+                }));
 
             headerOpen.Source = SilviaCore.Images.HeaderIcons.OpenNormal.ToWPFImageSource();
         }

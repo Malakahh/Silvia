@@ -53,8 +53,6 @@ namespace SilviaCore
                         plugins.Add(dllName, p);
 
                         Settings.CreatePluginSettingsDir(p.PluginName);
-
-                        p.OnLoad();
                     }
                 }
             }

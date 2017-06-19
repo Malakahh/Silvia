@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:Themes="clr-namespace:SilviaCore.Themes">
     <ControlTemplate x:Key="SilviaScrollBar" TargetType="{x:Type ScrollBar}">
         <Grid x:Name="Bg" SnapsToDevicePixels="True" Width="10">
             <Grid.RowDefinitions>
@@ -38,10 +39,10 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" TargetName="border" Value="#FFFFFFFF"/>
+                                            <Setter Property="Background" TargetName="border" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlHighlightBrush}"/>
                                         </Trigger>
                                         <Trigger Property="IsPressed" Value="True">
-                                            <Setter Property="Background" TargetName="border" Value="#7CFFFFFF"/>
+                                            <Setter Property="Background" TargetName="border" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlInteractBrush}"/>
                                         </Trigger>
                                         <Trigger Property="IsEnabled" Value="False">
                                             <Setter Property="Background" TargetName="border" Value="Transparent"/>
@@ -52,7 +53,7 @@
                         </Setter>
                     </Style>
                 </RepeatButton.Style>
-                <Path x:Name="ArrowTop" Data="M0,4C0,4 0,6 0,6 0,6 3.5,2.5 3.5,2.5 3.5,2.5 7,6 7,6 7,6 7,4 7,4 7,4 3.5,0.5 3.5,0.5 3.5,0.5 0,4 0,4z" Fill="#7CFFFFFF" Margin="1,2,1,1" Stretch="Uniform"/>
+                <Path x:Name="ArrowTop" Data="M0,4C0,4 0,6 0,6 0,6 3.5,2.5 3.5,2.5 3.5,2.5 7,6 7,6 7,6 7,4 7,4 7,4 3.5,0.5 3.5,0.5 3.5,0.5 0,4 0,4z" Fill="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlNormalBrush}" Margin="1,2,1,1" Stretch="Uniform"/>
             </RepeatButton>
             <Track x:Name="PART_Track" IsDirectionReversed="True" IsEnabled="{TemplateBinding IsMouseOver}" Grid.Row="1">
                 <Track.DecreaseRepeatButton>
@@ -102,13 +103,13 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Thumb}">
-                                            <Rectangle x:Name="rectangle" Fill="#7CFFFFFF" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>
+                                            <Rectangle x:Name="rectangle" Fill="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlNormalBrush}" Height="{TemplateBinding Height}" SnapsToDevicePixels="True" Width="{TemplateBinding Width}"/>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Fill" TargetName="rectangle" Value="#FFFFFFFF"/>
+                                                    <Setter Property="Fill" TargetName="rectangle" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlHighlightBrush}"/>
                                                 </Trigger>
                                                 <Trigger Property="IsDragging" Value="True">
-                                                    <Setter Property="Fill" TargetName="rectangle" Value="#FFFFFFFF"/>
+                                                    <Setter Property="Fill" TargetName="rectangle" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlInteractBrush}"/>
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -149,10 +150,10 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" TargetName="border" Value="#FFFFFFFF"/>
+                                            <Setter Property="Background" TargetName="border" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlHighlightBrush}"/>
                                         </Trigger>
                                         <Trigger Property="IsPressed" Value="True">
-                                            <Setter Property="Background" TargetName="border" Value="#7CFFFFFF"/>
+                                            <Setter Property="Background" TargetName="border" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlInteractBrush}"/>
                                         </Trigger>
                                         <Trigger Property="IsEnabled" Value="False">
                                             <Setter Property="Background" TargetName="border" Value="Transparent"/>
@@ -163,7 +164,7 @@
                         </Setter>
                     </Style>
                 </RepeatButton.Style>
-                <Path x:Name="ArrowBottom" Data="M0,2.5C0,2.5 0,0.5 0,0.5 0,0.5 3.5,4 3.5,4 3.5,4 7,0.5 7,0.5 7,0.5 7,2.5 7,2.5 7,2.5 3.5,6 3.5,6 3.5,6 0,2.5 0,2.5z" Fill="#7CFFFFFF" Margin="1,2,1,1" Stretch="Uniform"/>
+                <Path x:Name="ArrowBottom" Data="M0,2.5C0,2.5 0,0.5 0,0.5 0,0.5 3.5,4 3.5,4 3.5,4 7,0.5 7,0.5 7,0.5 7,2.5 7,2.5 7,2.5 3.5,6 3.5,6 3.5,6 0,2.5 0,2.5z" Fill="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlNormalBrush}" Margin="1,2,1,1" Stretch="Uniform"/>
             </RepeatButton>
         </Grid>
         <ControlTemplate.Triggers>

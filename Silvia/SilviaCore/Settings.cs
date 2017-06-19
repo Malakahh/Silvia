@@ -62,20 +62,6 @@ namespace SilviaCore
                 string[] filePaths = Directory.GetFiles(dir);
                 foreach (string fp in filePaths)
                 {
-                    //object o = Load(fp);
-
-                    //if (o != null)
-                    //{
-                    //    string fullClassName = fp.Split('\\').Last();
-
-                    //    if (!allSettings.ContainsKey(fullClassName))
-                    //    {
-                    //        allSettings.Add(fullClassName, new List<object>());
-                    //    }
-
-                    //    allSettings[fullClassName].Add(o);
-                    //}
-
                     Load(fp);
                 }
             }
@@ -95,31 +81,28 @@ namespace SilviaCore
             return t.AssemblyName() + "." + t.FullName;
         }
 
-        public static T GetSettings<T>(int index)
+        public static T GetSettings<T>(int index) where T : Settings
         {
             string fullName = GetFullNameOfSettings(typeof(T));
-            if (allSettings.ContainsKey(fullName) && allSettings[fullName].Count > 0)
+            if (allSettings.ContainsKey(fullName) && allSettings[fullName].Count > 0 && index < allSettings[fullName].Count)
             {
-                if (TryCast<T>(allSettings[fullName][index], out T ret))
-                {
-                    return ret;
-                }
+                return (T)allSettings[fullName][index];
             }
 
-            return default(T);
+            return null;
         }
 
-        private static bool TryCast<T>(object toCast, out T result)
-        {
-            if (toCast is T)
-            {
-                result = (T)toCast;
-                return true;
-            }
+        //private static bool TryCast<T>(object toCast, out T result)
+        //{
+        //    if (toCast is T)
+        //    {
+        //        result = (T)toCast;
+        //        return true;
+        //    }
 
-            result = default(T);
-            return false;
-        }
+        //    result = default(T);
+        //    return false;
+        //}
 
         private static void Save(List<object> list)
         {
@@ -162,6 +145,16 @@ namespace SilviaCore
             }
 
             return null;
+        }
+    }
+
+    public class SettingsException : Exception
+    {
+        public string Message { get; private set; }
+
+        public SettingsException(string msg)
+        {
+            this.Message = msg;
         }
     }
 }

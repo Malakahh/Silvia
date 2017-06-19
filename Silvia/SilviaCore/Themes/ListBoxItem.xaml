@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:Themes="clr-namespace:SilviaCore.Themes">
     <Style x:Key="SilviaListBoxItem" TargetType="{x:Type ListBoxItem}">
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="Template">
@@ -10,18 +11,18 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="UIElement.IsMouseOver" Value="True">
-                            <Setter Property="Background" TargetName="Bd" Value="Transparent"/>
-                            <Setter Property="BorderThickness" TargetName="Bd" Value="1"/>
-                            <Setter Property="BorderBrush" TargetName="Bd" Value="#73FFFFFF"/>
-                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                            <Setter Property="Background" TargetName="Bd" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlHighlightBackgroundBrush}"/>
+                            <Setter Property="BorderThickness" TargetName="Bd" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlHighlightBorderThickness}"/>
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlHighlightBrush}"/>
+                            <Setter Property="Foreground" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlHighlightBrush}"/>
                         </Trigger>
                         <Trigger Property="UIElement.IsMouseOver" Value="False">
-                            <Setter Property="Background" TargetName="Bd" Value="Transparent"/>
-                            <Setter Property="BorderThickness" TargetName="Bd" Value="1"/>
-                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                            <Setter Property="Background" TargetName="Bd" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlBackgroundBrush}"/>
+                            <Setter Property="BorderThickness" TargetName="Bd" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlBorderThickness}"/>
+                            <Setter Property="Foreground" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlNormalBrush}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="BorderBrush" TargetName="Bd" Value="#FFFFFF"/>
+                            <Setter Property="BorderBrush" TargetName="Bd" Value="{Binding Source={x:Static Themes:ThemeSettings.Instance}, Path=ControlHighlightBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

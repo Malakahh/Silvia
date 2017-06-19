@@ -32,6 +32,8 @@ namespace SilviaGUI
             Entries = new BindingList<Command>();
 
             TabCompletionList.ItemsSource = this.Entries;
+
+            SilviaCore.Effects.WindowBlur.Apply(this);
         }
 
         public void Deselect()
