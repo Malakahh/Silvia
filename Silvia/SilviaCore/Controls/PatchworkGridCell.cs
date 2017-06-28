@@ -9,17 +9,17 @@ using System.Windows.Controls;
 
 namespace SilviaCore.Controls
 {
-    public class PatchworkGridItem : UserControl
+    public class PatchworkGridCell : UserControl
     {
-        public event Action<PatchworkGridItem> Click;
+        public event Action<PatchworkGridCell> Click;
 
-        public Vector coord { get; set; }
+        public Vector Coord { get; set; }
         public Style DefaultStyle { get; set; }
-        public bool IsContentDefault { get; private set; }
+        public bool IsContentDefault { get { return Content == btn; } }
 
-        Button btn;
+        internal Button btn;
 
-        public PatchworkGridItem()
+        public PatchworkGridCell()
         {
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
@@ -30,14 +30,14 @@ namespace SilviaCore.Controls
                 img.Source = Images.Icons.PlusNormal.ToWPFImageSource();
                 btn.Content = img;
 
-                ResetContent();
+                Content = btn;
             }
 
-            this.MouseEnter += PatchworkGridItem_MouseEnter;
-            this.MouseLeave += PatchworkGridItem_MouseLeave;
+            this.MouseEnter += PatchworkGridCell_MouseEnter;
+            this.MouseLeave += PatchworkGridCell_MouseLeave;
         }
 
-        public PatchworkGridItem(Style defaultStyle) : this()
+        public PatchworkGridCell(Style defaultStyle) : this()
         {
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
@@ -45,23 +45,8 @@ namespace SilviaCore.Controls
                 btn.Style = DefaultStyle;
             }
         }
-        
-        public void SetContent(object content)
-        {
-            if (content == null)
-                return;
 
-            Content = content;
-            IsContentDefault = false;
-        }
-
-        public void ResetContent()
-        {
-            Content = btn;
-            IsContentDefault = true;
-        }
-
-        private void PatchworkGridItem_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        private void PatchworkGridCell_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (IsContentDefault)
             {
@@ -69,7 +54,7 @@ namespace SilviaCore.Controls
             }
         }
 
-        private void PatchworkGridItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        private void PatchworkGridCell_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (IsContentDefault)
             {

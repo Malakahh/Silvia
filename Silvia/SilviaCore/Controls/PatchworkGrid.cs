@@ -10,7 +10,7 @@ namespace SilviaCore.Controls
 {
     public class PatchworkGrid : UserControl
     {
-        public event Action<PatchworkGridItem> ItemClick;
+        public event Action<PatchworkGridCell> CellClick;
 
         public int NumColumns { get; set; }
         public int NumRows { get; set; }
@@ -19,7 +19,8 @@ namespace SilviaCore.Controls
         public Style DefaultItemStyle { get; set; }
 
         private Grid grid = new Grid();
-        List<Image> imgs = new List<Image>();
+        Dictionary<Vector, PatchworkGridCell> cells = new Dictionary<Vector, PatchworkGridCell>();
+
 
         public PatchworkGrid()
         {
@@ -37,10 +38,65 @@ namespace SilviaCore.Controls
 
         private void PatchworkGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            UpdateGrid();
+            ResetGrid();
         }
 
-        public void UpdateGrid()
+        public void SetCellContent(PatchworkGridCell cell, object content)
+        {
+            SetCellContent(cell, content, -1, -1);
+        }
+
+        public void SetCellContent(PatchworkGridCell cell, object content, int colSpan, int rowSpan)
+        {
+            if (colSpan <= 0)
+            {
+                colSpan = Grid.GetColumnSpan(cell);
+            }
+
+            if (rowSpan <= 0)
+            {
+                rowSpan = Grid.GetRowSpan(cell);
+            }
+
+            for (int x = 0; x < colSpan; x++)
+            {
+                for (int y = 0; y < rowSpan; y++)
+                {
+                    Vector v = new Vector(cell.Coord.X + x, cell.Coord.Y + y);
+
+                    if (cells.ContainsKey(v))
+                    {
+                        cells[v].Content = null;
+                    }
+                }
+            }
+
+            cell.Content = content;
+        }
+
+        public void ResetCellContent(PatchworkGridCell cell)
+        {
+            int colSpan = Grid.GetColumnSpan(cell);
+            int rowSpan = Grid.GetRowSpan(cell);
+
+            for (int x = 0; x < colSpan; x++)
+            {
+                for (int y = 0; y < rowSpan; y++)
+                {
+                    Vector v = new Vector(cell.Coord.X + x, cell.Coord.Y + y);
+
+                    if (cells.ContainsKey(v))
+                    {
+                        cells[v].Content = cells[v].btn;
+                    }
+                }
+            }
+
+            Grid.SetColumnSpan(cell, 1);
+            Grid.SetRowSpan(cell, 1);
+        }
+
+        public void ResetGrid()
         {
             this.Width = NumColumns * CellWidth;
             this.Height = NumRows * CellHeight;
@@ -68,13 +124,14 @@ namespace SilviaCore.Controls
             {
                 for (int r = 0; r < NumRows; r++)
                 {
-                    PatchworkGridItem item = new PatchworkGridItem(DefaultItemStyle);
-                    item.Click += (sender) => ItemClick?.Invoke(sender);
+                    PatchworkGridCell cell = new PatchworkGridCell(DefaultItemStyle);
+                    cell.Click += (sender) => CellClick?.Invoke(sender);
 
-                    item.coord = new Vector(c, r);
-                    Grid.SetRow(item, r);
-                    Grid.SetColumn(item, c);
-                    grid.Children.Add(item);
+                    cell.Coord = new Vector(c, r);
+                    Grid.SetRow(cell, r);
+                    Grid.SetColumn(cell, c);
+                    grid.Children.Add(cell);
+                    cells.Add(cell.Coord, cell);
                 }
             }
         }

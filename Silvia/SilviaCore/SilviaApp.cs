@@ -28,13 +28,13 @@ namespace SilviaCore
 
             InitBaseCommands();
 
+            PluginLoader.LoadPlugins();
             Settings.CreatePluginSettingsDir("SilviaCore");
             Settings.LoadSettings();
 
             Themes.ThemeSettings.Init();
             Images.Init();
 
-            PluginLoader.LoadPlugins();
 
             //Call Plugin.OnLoad
             foreach (Plugin p in PluginLoader.Plugins.Values)

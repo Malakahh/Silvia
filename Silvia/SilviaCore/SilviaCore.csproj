@@ -66,7 +66,7 @@
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Controls\PatchworkGrid.cs" />
     <Compile Include="Controls\ISettingsApplier.cs" />
-    <Compile Include="Controls\PatchworkGridItem.cs" />
+    <Compile Include="Controls\PatchworkGridCell.cs" />
     <Compile Include="Controls\StickyWindow.cs" />
     <Compile Include="Effects\WindowBlur.cs" />
     <Compile Include="Extensions.cs" />
